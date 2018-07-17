@@ -8,4 +8,4 @@ Original source code can be found [here](https://github.com/tensorflow/magenta/t
 Magenta's project has served only as an inspiration and there are no direct reworks 
  from `Python` to `WL`  and from `WL Neural Networks` to `TensorFlow`.
  
-_Detailed explanation of work that has been done here you can read in this [post](http://community.wolfram.com/groups/-/m/t/1380021)_
+_A detailed explanation of the work that has been done here you can read in this [post](http://community.wolfram.com/groups/-/m/t/1380021)_
