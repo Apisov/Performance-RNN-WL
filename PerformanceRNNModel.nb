@@ -1,0 +1,187 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='WolframDesktop 11.3' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       161,          7]
+NotebookDataLength[      7213,        179]
+NotebookOptionsPosition[      5856,        154]
+NotebookOutlinePosition[      6228,        170]
+CellTagsIndexPosition[      6185,        167]
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"dataTrain", " ", "=", " ", 
+   RowBox[{"RandomSample", "[", 
+    RowBox[{"Import", "[", 
+     RowBox[{"FileNameJoin", "[", 
+      RowBox[{"{", 
+       RowBox[{
+        RowBox[{"NotebookDirectory", "[", "]"}], ",", "\"\<Dataset\>\"", ",", 
+        " ", "\"\<dataTrain.wxf\>\""}], "}"}], "]"}], "]"}], "]"}]}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"dataValidate", " ", "=", " ", 
+   RowBox[{"RandomSample", "[", 
+    RowBox[{"Import", "[", 
+     RowBox[{"FileNameJoin", "[", 
+      RowBox[{"{", 
+       RowBox[{
+        RowBox[{"NotebookDirectory", "[", "]"}], ",", "\"\<Dataset\>\"", ",", 
+        " ", "\"\<dataValidate.wxf\>\""}], "}"}], "]"}], "]"}], "]"}]}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"dataTest", " ", "=", " ", 
+   RowBox[{"Import", "[", 
+    RowBox[{"FileNameJoin", "[", 
+     RowBox[{"{", 
+      RowBox[{
+       RowBox[{"NotebookDirectory", "[", "]"}], ",", "\"\<Dataset\>\"", ",", 
+       " ", "\"\<dataTest.wxf\>\""}], "}"}], "]"}], "]"}]}], ";"}]}], "Input",
+ CellLabel->"In[49]:=",ExpressionUUID->"01297992-0b80-486d-9c8e-66a83461e06c"],
+
+Cell["Intersection sanity check", "CodeText",ExpressionUUID->"f949f1bb-1984-408f-9c69-a870fb66fdb3"],
+
+Cell[BoxData[{
+ RowBox[{"Intersection", "[", 
+  RowBox[{"dataTrain", ",", " ", "dataValidate"}], 
+  "]"}], "\[IndentingNewLine]", 
+ RowBox[{"Intersection", "[", 
+  RowBox[{"dataTrain", ",", " ", "dataTest"}], "]"}], "\[IndentingNewLine]", 
+ RowBox[{"Intersection", "[", 
+  RowBox[{"dataTest", ",", " ", "dataValidate"}], "]"}]}], "Input",ExpressionU\
+UID->"fa17955f-90e2-447c-859a-62993429160e"],
+
+Cell["Network that predicts next event for each item in a sequence", \
+"CodeText",ExpressionUUID->"5cfad475-52fa-48ec-8b75-9c9ff4867458"],
+
+Cell[BoxData[
+ RowBox[{"predict", " ", "=", " ", 
+  RowBox[{"NetChain", "[", 
+   RowBox[{"{", "\[IndentingNewLine]", 
+    RowBox[{
+     RowBox[{"UnitVectorLayer", "[", "310", "]"}], ",", "\[IndentingNewLine]", 
+     RowBox[{"GatedRecurrentLayer", "[", "512", "]"}], ",", 
+     "\[IndentingNewLine]", 
+     RowBox[{"GatedRecurrentLayer", "[", "512", "]"}], ",", 
+     "\[IndentingNewLine]", 
+     RowBox[{"NetMapOperator", "[", 
+      RowBox[{"LinearLayer", "[", "310", "]"}], "]"}], ",", 
+     "\[IndentingNewLine]", 
+     RowBox[{"SoftmaxLayer", "[", "]"}]}], "\[IndentingNewLine]", "}"}], 
+   "]"}]}]], "Input",ExpressionUUID->"60fbf8c9-e641-44df-afca-c5ae2849cae1"],
+
+Cell["\<\
+Split the input sequence into two sequences to check loss on the whole \
+sequence without one element.\
+\>", "CodeText",ExpressionUUID->"500312a7-25eb-49d4-acd1-da184208f643"],
+
+Cell[BoxData[
+ RowBox[{"teacherForcingNet", "=", 
+  RowBox[{"NetGraph", "[", 
+   RowBox[{
+    RowBox[{"<|", 
+     RowBox[{
+      RowBox[{"\"\<predict\>\"", "\[Rule]", "predict"}], ",", 
+      RowBox[{"\"\<rest\>\"", "\[Rule]", 
+       RowBox[{"SequenceRestLayer", "[", "]"}]}], ",", 
+      RowBox[{"\"\<most\>\"", "\[Rule]", 
+       RowBox[{"SequenceMostLayer", "[", "]"}]}], ",", 
+      RowBox[{"\"\<loss\>\"", "\[Rule]", 
+       RowBox[{"CrossEntropyLossLayer", "[", "\"\<Index\>\"", "]"}]}]}], 
+     "|>"}], ",", 
+    RowBox[{"{", 
+     RowBox[{
+      RowBox[{
+       RowBox[{"NetPort", "[", "\"\<Input\>\"", "]"}], "\[Rule]", 
+       RowBox[{"\"\<most\>\"", "\[Rule]", 
+        RowBox[{"\"\<predict\>\"", "\[Rule]", 
+         RowBox[{"NetPort", "[", 
+          RowBox[{"\"\<loss\>\"", ",", "\"\<Input\>\""}], "]"}]}]}]}], ",", 
+      RowBox[{
+       RowBox[{"NetPort", "[", "\"\<Input\>\"", "]"}], "\[Rule]", 
+       RowBox[{"\"\<rest\>\"", "\[Rule]", 
+        RowBox[{"NetPort", "[", 
+         RowBox[{"\"\<loss\>\"", ",", "\"\<Target\>\""}], "]"}]}]}]}], "}"}], 
+    ",", 
+    RowBox[{"\"\<Input\>\"", "\[Rule]", " ", 
+     RowBox[{"{", 
+      RowBox[{"500", ",", "\"\<Integer\>\""}], "}"}]}]}], "]"}]}]], "Input",
+ CellLabel->"In[45]:=",ExpressionUUID->"15caad89-acb2-4f08-8d88-c986d15888ff"],
+
+Cell["Train this monster", "CodeText",ExpressionUUID->"84fa508a-0c14-4cdf-8a23-7136843c1916"],
+
+Cell[BoxData[
+ RowBox[{"result", "=", 
+  RowBox[{"NetTrain", "[", 
+   RowBox[{"teacherForcingNet", ",", 
+    RowBox[{"<|", 
+     RowBox[{"\"\<Input\>\"", "\[Rule]", "dataTrain"}], "|>"}], ",", "All", 
+    ",", 
+    RowBox[{"BatchSize", "\[Rule]", "64"}], " ", ",", " ", 
+    RowBox[{"TargetDevice", "\[Rule]", "\"\<GPU\>\""}], ",", " ", 
+    RowBox[{"ValidationSet", "\[Rule]", " ", 
+     RowBox[{"<|", 
+      RowBox[{"\"\<Input\>\"", "\[Rule]", "dataValidate"}], " ", "|>"}]}]}], 
+   "]"}]}]], "Input",ExpressionUUID->"446413e7-2b26-4d1b-b882-9a65759e7f15"],
+
+Cell["Don\[CloseCurlyQuote]t forget to save your training result", "CodeText",ExpressionUUID->"fb6dff76-aa52-4fe2-932a-bc731c3112a3"],
+
+Cell[BoxData[
+ RowBox[{"Export", "[", 
+  RowBox[{"\"\<performance_rnn.wlnet\>\"", ",", "result"}], "]"}]], "Input",Ex\
+pressionUUID->"d574ece4-7188-41d1-9cee-5dc411ea9b60"],
+
+Cell[BoxData[
+ RowBox[{"ListLogPlot", "[", 
+  RowBox[{"{", 
+   RowBox[{
+    RowBox[{"result", "[", "\"\<RoundLossList\>\"", "]"}], ",", 
+    RowBox[{
+     RowBox[{"result", "[", "\"\<ValidationLossList\>\"", "]"}], "[", 
+     RowBox[{"[", 
+      RowBox[{"All", ",", "2"}], "]"}], "]"}]}], "}"}], "]"}]], "Input",
+ CellLabel->"In[59]:=",ExpressionUUID->"92414d7e-419c-4cfa-9d9c-2f35bb651ea6"]
+},
+WindowSize->{1366, 695},
+WindowMargins->{{-8, Automatic}, {Automatic, -8}},
+TrackCellChangeTimes->False,
+FrontEndVersion->"11.3 for Microsoft Windows (64-bit) (March 7, 2018)",
+StyleDefinitions->"Default.nb"
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[561, 20, 1127, 29, 67, "Input",ExpressionUUID->"01297992-0b80-486d-9c8e-66a83461e06c"],
+Cell[1691, 51, 100, 0, 37, "CodeText",ExpressionUUID->"f949f1bb-1984-408f-9c69-a870fb66fdb3"],
+Cell[1794, 53, 395, 8, 67, "Input",ExpressionUUID->"fa17955f-90e2-447c-859a-62993429160e"],
+Cell[2192, 63, 137, 1, 37, "CodeText",ExpressionUUID->"5cfad475-52fa-48ec-8b75-9c9ff4867458"],
+Cell[2332, 66, 668, 14, 143, "Input",ExpressionUUID->"60fbf8c9-e641-44df-afca-c5ae2849cae1"],
+Cell[3003, 82, 185, 3, 37, "CodeText",ExpressionUUID->"500312a7-25eb-49d4-acd1-da184208f643"],
+Cell[3191, 87, 1299, 31, 48, "Input",ExpressionUUID->"15caad89-acb2-4f08-8d88-c986d15888ff"],
+Cell[4493, 120, 93, 0, 37, "CodeText",ExpressionUUID->"84fa508a-0c14-4cdf-8a23-7136843c1916"],
+Cell[4589, 122, 558, 12, 28, "Input",ExpressionUUID->"446413e7-2b26-4d1b-b882-9a65759e7f15"],
+Cell[5150, 136, 133, 0, 37, "CodeText",ExpressionUUID->"fb6dff76-aa52-4fe2-932a-bc731c3112a3"],
+Cell[5286, 138, 172, 3, 28, "Input",ExpressionUUID->"d574ece4-7188-41d1-9cee-5dc411ea9b60"],
+Cell[5461, 143, 391, 9, 28, "Input",ExpressionUUID->"92414d7e-419c-4cfa-9d9c-2f35bb651ea6"]
+}
+]
+*)
+

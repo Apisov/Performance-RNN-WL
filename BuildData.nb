@@ -1,0 +1,170 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='WolframDesktop 11.3' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       161,          7]
+NotebookDataLength[      6039,        162]
+NotebookOptionsPosition[      4546,        135]
+NotebookOutlinePosition[      4916,        151]
+CellTagsIndexPosition[      4873,        148]
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"PacletDirectoryAdd", "[", 
+   RowBox[{"NotebookDirectory", "[", "]"}], "]"}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{"<<", "Project`"}]}], "Input",
+ CellLabel->"In[13]:=",ExpressionUUID->"a6249df0-059d-4dc0-b914-283ada34dafd"],
+
+Cell["Take all files names in Midi folder", "CodeText",
+ CellGroupingRules->{
+  "GroupTogetherGrouping", 
+   10002.},ExpressionUUID->"8c193e7c-85de-40f0-a21a-e4240407fc3d"],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"files", " ", "=", " ", 
+   RowBox[{"FileNames", "[", 
+    RowBox[{"\"\<*\>\"", ",", 
+     RowBox[{
+      RowBox[{"NotebookDirectory", "[", "]"}], "<>", "\"\<Midi\>\""}]}], 
+    "]"}]}], ";"}]], "Input",ExpressionUUID->"f57ca0e2-9da5-4c60-b8aa-\
+7f3e715e84f9"],
+
+Cell["Encode all files", "CodeText",ExpressionUUID->"f4cbc378-3f5f-458e-8d44-56fb3434677e"],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"encodings", " ", "=", " ", 
+   RowBox[{"EncodeTrack", " ", "/@", " ", "files"}]}], ";"}]], "Input",Express\
+ionUUID->"efb2d6a8-0153-4e03-9d15-597987538ba8"],
+
+Cell["Gracefully flatten the result", "CodeText",ExpressionUUID->"97172c40-52d6-4414-bd8b-4de3a563e2e0"],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"data", " ", "=", " ", 
+   RowBox[{"Flatten", "[", 
+    RowBox[{"encodings", ",", "1"}], "]"}]}], ";"}]], "Input",ExpressionUUID->\
+"0e64ba7b-8a77-41c0-8e56-a78521d5ae0f"],
+
+Cell["Delete unwanted duplicates", "CodeText",ExpressionUUID->"7f3967b9-81c8-498b-87ab-50daa68b7d95"],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"data", " ", "=", " ", 
+   RowBox[{"DeleteDuplicates", "[", "output", "]"}]}], ";"}]], "Input",Express\
+ionUUID->"b247896d-83be-43b9-a95b-2d36b9a620f8"],
+
+Cell["Do magic partitions", "CodeText",ExpressionUUID->"b7269cc4-4160-4f58-bb4f-79a37646afcc"],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{
+   RowBox[{"{", 
+    RowBox[{"dataTrain", ",", "dataValidate", ",", "dataTest"}], "}"}], "=", 
+   RowBox[{"With", "[", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"fullData", "=", 
+       RowBox[{"RandomSample", "[", "data", "]"}]}], "}"}], ",", 
+     "\[IndentingNewLine]", 
+     RowBox[{"TakeList", "[", 
+      RowBox[{"fullData", ",", 
+       RowBox[{"{", 
+        RowBox[{
+         RowBox[{"Round", "[", 
+          RowBox[{"0.85", "*", 
+           RowBox[{"Length", "[", "fullData", "]"}]}], "]"}], ",", 
+         RowBox[{"Round", "[", 
+          RowBox[{"0.1", "*", 
+           RowBox[{"Length", "[", "fullData", "]"}]}], "]"}], ",", "All"}], 
+        "}"}]}], "]"}]}], "\[IndentingNewLine]", "]"}]}], ";"}]], "Input",Expr\
+essionUUID->"fbe3d5cc-667f-4adb-b976-632a0b73cf96"],
+
+Cell["Save it!", "CodeText",ExpressionUUID->"6e99feeb-96a5-4ecd-817a-69e38389e0b5"],
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"Export", "[", 
+   RowBox[{
+    RowBox[{"FileNameJoin", "[", 
+     RowBox[{"{", 
+      RowBox[{
+       RowBox[{"NotebookDirectory", "[", "]"}], ",", "\"\<TrainedModels\>\"", 
+       ",", " ", "\"\<data.wxf\>\""}], "}"}], "]"}], ",", " ", "data"}], 
+   "]"}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"Export", "[", 
+   RowBox[{
+    RowBox[{"FileNameJoin", "[", 
+     RowBox[{"{", 
+      RowBox[{
+       RowBox[{"NotebookDirectory", "[", "]"}], ",", "\"\<TrainedModels\>\"", 
+       ",", " ", "\"\<dataTrain.wxf\>\""}], "}"}], "]"}], ",", " ", 
+    "dataTrain"}], "]"}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"Export", "[", 
+   RowBox[{
+    RowBox[{"FileNameJoin", "[", 
+     RowBox[{"{", 
+      RowBox[{
+       RowBox[{"NotebookDirectory", "[", "]"}], ",", "\"\<TrainedModels\>\"", 
+       ",", " ", " ", "\"\<dataValidate.wxf\>\""}], "}"}], "]"}], ",", " ", 
+    "dataValidate"}], "]"}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"Export", "[", 
+   RowBox[{
+    RowBox[{"FileNameJoin", "[", 
+     RowBox[{"{", 
+      RowBox[{
+       RowBox[{"NotebookDirectory", "[", "]"}], ",", "\"\<TrainedModels\>\"", 
+       ",", " ", "\"\<dataTest.wxf\>\""}], "}"}], "]"}], ",", " ", 
+    "dataTest"}], "]"}], ";"}]}], "Input",ExpressionUUID->"d9c0df49-eaa0-4108-\
+bdc7-0c4e7f4ab9d9"]
+},
+WindowSize->{1008, 679},
+WindowMargins->{{0, Automatic}, {Automatic, 0}},
+TrackCellChangeTimes->False,
+FrontEndVersion->"11.3 for Microsoft Windows (64-bit) (March 7, 2018)",
+StyleDefinitions->"Default.nb"
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[561, 20, 266, 6, 48, "Input",ExpressionUUID->"a6249df0-059d-4dc0-b914-283ada34dafd"],
+Cell[830, 28, 172, 3, 37, "CodeText",ExpressionUUID->"8c193e7c-85de-40f0-a21a-e4240407fc3d",
+ CellGroupingRules->{"GroupTogetherGrouping", 10002.}],
+Cell[1005, 33, 294, 8, 28, "Input",ExpressionUUID->"f57ca0e2-9da5-4c60-b8aa-7f3e715e84f9"],
+Cell[1302, 43, 91, 0, 37, "CodeText",ExpressionUUID->"f4cbc378-3f5f-458e-8d44-56fb3434677e"],
+Cell[1396, 45, 191, 4, 28, "Input",ExpressionUUID->"efb2d6a8-0153-4e03-9d15-597987538ba8"],
+Cell[1590, 51, 104, 0, 37, "CodeText",ExpressionUUID->"97172c40-52d6-4414-bd8b-4de3a563e2e0"],
+Cell[1697, 53, 205, 5, 28, "Input",ExpressionUUID->"0e64ba7b-8a77-41c0-8e56-a78521d5ae0f"],
+Cell[1905, 60, 101, 0, 37, "CodeText",ExpressionUUID->"7f3967b9-81c8-498b-87ab-50daa68b7d95"],
+Cell[2009, 62, 186, 4, 28, "Input",ExpressionUUID->"b247896d-83be-43b9-a95b-2d36b9a620f8"],
+Cell[2198, 68, 94, 0, 37, "CodeText",ExpressionUUID->"b7269cc4-4160-4f58-bb4f-79a37646afcc"],
+Cell[2295, 70, 818, 22, 67, "Input",ExpressionUUID->"fbe3d5cc-667f-4adb-b976-632a0b73cf96"],
+Cell[3116, 94, 83, 0, 37, "CodeText",ExpressionUUID->"6e99feeb-96a5-4ecd-817a-69e38389e0b5"],
+Cell[3202, 96, 1340, 37, 86, "Input",ExpressionUUID->"d9c0df49-eaa0-4108-bdc7-0c4e7f4ab9d9"]
+}
+]
+*)
+
