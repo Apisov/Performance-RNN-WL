@@ -10,10 +10,10 @@
 NotebookFileLineBreakTest
 NotebookFileLineBreakTest
 NotebookDataPosition[       161,          7]
-NotebookDataLength[      7213,        179]
-NotebookOptionsPosition[      5856,        154]
-NotebookOutlinePosition[      6228,        170]
-CellTagsIndexPosition[      6185,        167]
+NotebookDataLength[      8009,        198]
+NotebookOptionsPosition[      6649,        173]
+NotebookOutlinePosition[      7020,        189]
+CellTagsIndexPosition[      6977,        186]
 WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
@@ -47,7 +47,8 @@ Cell[BoxData[{
       RowBox[{
        RowBox[{"NotebookDirectory", "[", "]"}], ",", "\"\<Dataset\>\"", ",", 
        " ", "\"\<dataTest.wxf\>\""}], "}"}], "]"}], "]"}]}], ";"}]}], "Input",
- CellLabel->"In[49]:=",ExpressionUUID->"01297992-0b80-486d-9c8e-66a83461e06c"],
+ CellLabel->
+  "In[142]:=",ExpressionUUID->"01297992-0b80-486d-9c8e-66a83461e06c"],
 
 Cell["Intersection sanity check", "CodeText",ExpressionUUID->"f949f1bb-1984-408f-9c69-a870fb66fdb3"],
 
@@ -78,7 +79,9 @@ Cell[BoxData[
       RowBox[{"LinearLayer", "[", "310", "]"}], "]"}], ",", 
      "\[IndentingNewLine]", 
      RowBox[{"SoftmaxLayer", "[", "]"}]}], "\[IndentingNewLine]", "}"}], 
-   "]"}]}]], "Input",ExpressionUUID->"60fbf8c9-e641-44df-afca-c5ae2849cae1"],
+   "]"}]}]], "Input",
+ CellLabel->
+  "In[134]:=",ExpressionUUID->"60fbf8c9-e641-44df-afca-c5ae2849cae1"],
 
 Cell["\<\
 Split the input sequence into two sequences to check loss on the whole \
@@ -86,74 +89,90 @@ sequence without one element.\
 \>", "CodeText",ExpressionUUID->"500312a7-25eb-49d4-acd1-da184208f643"],
 
 Cell[BoxData[
- RowBox[{"teacherForcingNet", "=", 
-  RowBox[{"NetGraph", "[", 
-   RowBox[{
-    RowBox[{"<|", 
-     RowBox[{
-      RowBox[{"\"\<predict\>\"", "\[Rule]", "predict"}], ",", 
-      RowBox[{"\"\<rest\>\"", "\[Rule]", 
-       RowBox[{"SequenceRestLayer", "[", "]"}]}], ",", 
-      RowBox[{"\"\<most\>\"", "\[Rule]", 
-       RowBox[{"SequenceMostLayer", "[", "]"}]}], ",", 
-      RowBox[{"\"\<loss\>\"", "\[Rule]", 
-       RowBox[{"CrossEntropyLossLayer", "[", "\"\<Index\>\"", "]"}]}]}], 
-     "|>"}], ",", 
-    RowBox[{"{", 
-     RowBox[{
+ RowBox[{
+  RowBox[{"teacherForcingNet", " ", "=", " ", 
+   RowBox[{"NetGraph", "[", 
+    RowBox[{
+     RowBox[{"<|", "\[IndentingNewLine]", 
       RowBox[{
-       RowBox[{"NetPort", "[", "\"\<Input\>\"", "]"}], "\[Rule]", 
-       RowBox[{"\"\<most\>\"", "\[Rule]", 
-        RowBox[{"\"\<predict\>\"", "\[Rule]", 
-         RowBox[{"NetPort", "[", 
-          RowBox[{"\"\<loss\>\"", ",", "\"\<Input\>\""}], "]"}]}]}]}], ",", 
-      RowBox[{
-       RowBox[{"NetPort", "[", "\"\<Input\>\"", "]"}], "\[Rule]", 
-       RowBox[{"\"\<rest\>\"", "\[Rule]", 
-        RowBox[{"NetPort", "[", 
-         RowBox[{"\"\<loss\>\"", ",", "\"\<Target\>\""}], "]"}]}]}]}], "}"}], 
-    ",", 
-    RowBox[{"\"\<Input\>\"", "\[Rule]", " ", 
+       RowBox[{"\"\<predict\>\"", "->", "predict"}], ",", "\n", "\t", 
+       RowBox[{"\"\<rest\>\"", " ", "->", " ", 
+        RowBox[{"SequenceRestLayer", "[", "]"}]}], ",", "\n", "\t", 
+       RowBox[{"\"\<most\>\"", " ", "->", " ", 
+        RowBox[{"SequenceMostLayer", "[", "]"}]}], ",", " ", "\n", "\t", 
+       RowBox[{"\"\<loss\>\"", " ", "\[Rule]", " ", 
+        RowBox[{"CrossEntropyLossLayer", "[", "\"\<Index\>\"", "]"}]}]}], 
+      "|>"}], ",", "\n", "\t", 
      RowBox[{"{", 
-      RowBox[{"500", ",", "\"\<Integer\>\""}], "}"}]}]}], "]"}]}]], "Input",
- CellLabel->"In[45]:=",ExpressionUUID->"15caad89-acb2-4f08-8d88-c986d15888ff"],
+      RowBox[{
+       RowBox[{
+        RowBox[{"NetPort", "[", "\"\<Input\>\"", "]"}], " ", "->", " ", 
+        RowBox[{"\"\<most\>\"", " ", "->", " ", 
+         RowBox[{"\"\<predict\>\"", " ", "->", " ", 
+          RowBox[{"NetPort", "[", 
+           RowBox[{"\"\<loss\>\"", ",", " ", "\"\<Input\>\""}], "]"}]}]}]}], 
+       ",", "\n", "\t", 
+       RowBox[{
+        RowBox[{"NetPort", "[", "\"\<Input\>\"", "]"}], " ", "->", " ", 
+        RowBox[{"\"\<rest\>\"", " ", "->", " ", 
+         RowBox[{"NetPort", "[", 
+          RowBox[{"\"\<loss\>\"", ",", " ", "\"\<Target\>\""}], "]"}]}]}]}], 
+      "}"}], ",", " ", 
+     RowBox[{"\"\<Input\>\"", " ", "->", " ", 
+      RowBox[{"{", 
+       RowBox[{"500", ",", " ", "\"\<Integer\>\""}], "}"}]}]}], "\n", "]"}]}],
+   ";"}]], "Input",
+ CellLabel->
+  "In[145]:=",ExpressionUUID->"15caad89-acb2-4f08-8d88-c986d15888ff"],
 
 Cell["Train this monster", "CodeText",ExpressionUUID->"84fa508a-0c14-4cdf-8a23-7136843c1916"],
 
 Cell[BoxData[
- RowBox[{"result", "=", 
+ RowBox[{
+  RowBox[{"checkPointDir", " ", "=", " ", 
+   RowBox[{"FileNameJoin", "[", 
+    RowBox[{"{", 
+     RowBox[{
+      RowBox[{"NotebookDirectory", "[", "]"}], ",", "\"\<TrainedModels\>\"", 
+      ",", " ", "\"\<perfomance_rnn_checkpoint.wlnet\>\""}], "}"}], "]"}]}], 
+  ";"}]], "Input",
+ CellLabel->
+  "In[146]:=",ExpressionUUID->"6fe413ea-5dc9-496c-aaa1-251f6a337a72"],
+
+Cell[BoxData[
+ RowBox[{"result", " ", "=", " ", 
   RowBox[{"NetTrain", "[", 
-   RowBox[{"teacherForcingNet", ",", 
+   RowBox[{"teacherForcingNet", ",", " ", "\n", "\t", 
     RowBox[{"<|", 
-     RowBox[{"\"\<Input\>\"", "\[Rule]", "dataTrain"}], "|>"}], ",", "All", 
-    ",", 
-    RowBox[{"BatchSize", "\[Rule]", "64"}], " ", ",", " ", 
-    RowBox[{"TargetDevice", "\[Rule]", "\"\<GPU\>\""}], ",", " ", 
-    RowBox[{"ValidationSet", "\[Rule]", " ", 
+     RowBox[{"\"\<Input\>\"", " ", "->", " ", "dataTrain"}], "|>"}], ",", " ",
+     "\n", "\t", "All", ",", " ", "\n", "\t", 
+    RowBox[{"TrainingProgressCheckpointing", " ", "->", " ", 
+     RowBox[{"{", 
+      RowBox[{"\"\<File\>\"", ",", "  ", "checkPointDir", ",", " ", 
+       RowBox[{"\"\<Interval\>\"", " ", "->", " ", 
+        RowBox[{"Quantity", "[", 
+         RowBox[{"5", ",", " ", "\"\<Minutes\>\""}], "]"}]}]}], "}"}]}], ",", 
+    "\n", "\t", 
+    RowBox[{"BatchSize", " ", "->", " ", "64"}], ",", " ", "\n", "\t", 
+    RowBox[{"MaxTrainingRounds", " ", "->", " ", "10"}], ",", "\n", "\t", 
+    RowBox[{"TargetDevice", " ", "->", " ", "\"\<GPU\>\""}], ",", " ", "\n", 
+    "\t", 
+    RowBox[{"ValidationSet", " ", "->", " ", 
      RowBox[{"<|", 
-      RowBox[{"\"\<Input\>\"", "\[Rule]", "dataValidate"}], " ", "|>"}]}]}], 
-   "]"}]}]], "Input",ExpressionUUID->"446413e7-2b26-4d1b-b882-9a65759e7f15"],
+      RowBox[{"\"\<Input\>\"", " ", "->", " ", "dataValidate"}], "|>"}]}]}], 
+   "\n", "]"}]}]], "Input",ExpressionUUID->"446413e7-2b26-4d1b-b882-\
+9a65759e7f15"],
 
-Cell["Don\[CloseCurlyQuote]t forget to save your training result", "CodeText",ExpressionUUID->"fb6dff76-aa52-4fe2-932a-bc731c3112a3"],
-
-Cell[BoxData[
- RowBox[{"Export", "[", 
-  RowBox[{"\"\<performance_rnn.wlnet\>\"", ",", "result"}], "]"}]], "Input",Ex\
-pressionUUID->"d574ece4-7188-41d1-9cee-5dc411ea9b60"],
+Cell["Don\[CloseCurlyQuote]t forget to save your training result!", "CodeText",ExpressionUUID->"fb6dff76-aa52-4fe2-932a-bc731c3112a3"],
 
 Cell[BoxData[
- RowBox[{"ListLogPlot", "[", 
-  RowBox[{"{", 
-   RowBox[{
-    RowBox[{"result", "[", "\"\<RoundLossList\>\"", "]"}], ",", 
-    RowBox[{
-     RowBox[{"result", "[", "\"\<ValidationLossList\>\"", "]"}], "[", 
-     RowBox[{"[", 
-      RowBox[{"All", ",", "2"}], "]"}], "]"}]}], "}"}], "]"}]], "Input",
- CellLabel->"In[59]:=",ExpressionUUID->"92414d7e-419c-4cfa-9d9c-2f35bb651ea6"]
+ RowBox[{
+  RowBox[{"Export", "[", 
+   RowBox[{"\"\<performance_rnn.wlnet\>\"", ",", "result"}], "]"}], 
+  ";"}]], "Input",ExpressionUUID->"d574ece4-7188-41d1-9cee-5dc411ea9b60"]
 },
-WindowSize->{1366, 695},
-WindowMargins->{{-8, Automatic}, {Automatic, -8}},
+WindowSize->{1350, 695},
+WindowMargins->{{-8, Automatic}, {Automatic, 0}},
 TrackCellChangeTimes->False,
 FrontEndVersion->"11.3 for Microsoft Windows (64-bit) (March 7, 2018)",
 StyleDefinitions->"Default.nb"
@@ -169,18 +188,18 @@ CellTagsIndex->{}
 *)
 (*NotebookFileOutline
 Notebook[{
-Cell[561, 20, 1127, 29, 67, "Input",ExpressionUUID->"01297992-0b80-486d-9c8e-66a83461e06c"],
-Cell[1691, 51, 100, 0, 37, "CodeText",ExpressionUUID->"f949f1bb-1984-408f-9c69-a870fb66fdb3"],
-Cell[1794, 53, 395, 8, 67, "Input",ExpressionUUID->"fa17955f-90e2-447c-859a-62993429160e"],
-Cell[2192, 63, 137, 1, 37, "CodeText",ExpressionUUID->"5cfad475-52fa-48ec-8b75-9c9ff4867458"],
-Cell[2332, 66, 668, 14, 143, "Input",ExpressionUUID->"60fbf8c9-e641-44df-afca-c5ae2849cae1"],
-Cell[3003, 82, 185, 3, 37, "CodeText",ExpressionUUID->"500312a7-25eb-49d4-acd1-da184208f643"],
-Cell[3191, 87, 1299, 31, 48, "Input",ExpressionUUID->"15caad89-acb2-4f08-8d88-c986d15888ff"],
-Cell[4493, 120, 93, 0, 37, "CodeText",ExpressionUUID->"84fa508a-0c14-4cdf-8a23-7136843c1916"],
-Cell[4589, 122, 558, 12, 28, "Input",ExpressionUUID->"446413e7-2b26-4d1b-b882-9a65759e7f15"],
-Cell[5150, 136, 133, 0, 37, "CodeText",ExpressionUUID->"fb6dff76-aa52-4fe2-932a-bc731c3112a3"],
-Cell[5286, 138, 172, 3, 28, "Input",ExpressionUUID->"d574ece4-7188-41d1-9cee-5dc411ea9b60"],
-Cell[5461, 143, 391, 9, 28, "Input",ExpressionUUID->"92414d7e-419c-4cfa-9d9c-2f35bb651ea6"]
+Cell[561, 20, 1131, 30, 67, "Input",ExpressionUUID->"01297992-0b80-486d-9c8e-66a83461e06c"],
+Cell[1695, 52, 100, 0, 37, "CodeText",ExpressionUUID->"f949f1bb-1984-408f-9c69-a870fb66fdb3"],
+Cell[1798, 54, 395, 8, 67, "Input",ExpressionUUID->"fa17955f-90e2-447c-859a-62993429160e"],
+Cell[2196, 64, 137, 1, 37, "CodeText",ExpressionUUID->"5cfad475-52fa-48ec-8b75-9c9ff4867458"],
+Cell[2336, 67, 696, 16, 143, "Input",ExpressionUUID->"60fbf8c9-e641-44df-afca-c5ae2849cae1"],
+Cell[3035, 85, 185, 3, 37, "CodeText",ExpressionUUID->"500312a7-25eb-49d4-acd1-da184208f643"],
+Cell[3223, 90, 1526, 35, 162, "Input",ExpressionUUID->"15caad89-acb2-4f08-8d88-c986d15888ff"],
+Cell[4752, 127, 93, 0, 37, "CodeText",ExpressionUUID->"84fa508a-0c14-4cdf-8a23-7136843c1916"],
+Cell[4848, 129, 389, 10, 28, "Input",ExpressionUUID->"6fe413ea-5dc9-496c-aaa1-251f6a337a72"],
+Cell[5240, 141, 1073, 22, 181, "Input",ExpressionUUID->"446413e7-2b26-4d1b-b882-9a65759e7f15"],
+Cell[6316, 165, 134, 0, 37, "CodeText",ExpressionUUID->"fb6dff76-aa52-4fe2-932a-bc731c3112a3"],
+Cell[6453, 167, 192, 4, 28, "Input",ExpressionUUID->"d574ece4-7188-41d1-9cee-5dc411ea9b60"]
 }
 ]
 *)

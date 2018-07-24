@@ -37,16 +37,14 @@ NoteOffEventsEnd = NoteEventsLength * 2;
 TimeShiftsEnd = NoteOffEventsEnd + TimeShiftsLength;
 VelocitiesEnd = TimeShiftsEnd + VelocitiesLength;
 
-ReturnIndex = True; (* Not so functional way to do things but this the fastest way to make the switches*)
 
 (* ::CodeText:: *)
 (*Utilities*)
 
 
 (* ::Input::Initialization:: *)
-
 (*Create one hot vector of index*)
-OneHotEncoding[index_Integer] := If[ReturnIndex, UnitVector[VelocitiesEnd, index], index];
+OneHotEncoding[index_Integer] := If[True, index, UnitVector[VelocitiesEnd, index]];
 
 EncodeNote[midiNote_Integer, isOn_] := Block[{note = midiNote - MidiNoteShift},
   If[note <= 0, note = midiNote + 24(* Adding missing two octaves just in case *) - MidiNoteShift];
@@ -65,10 +63,10 @@ DecodeVelocity[position_] := Floor[N[(position - TimeShiftsEnd ) / VelocityQuant
 MaxTimeShiftEncodings[count_] := Table[OneHotEncoding[ToTimeShiftIndex[MaxTimeShift]], {i, count }];
 
 EncodeTimeShift[duration_Real] := If[duration <= MaxTimeShift,
-(*Create only one vector with duration less or equal to one second *)
+(* Create only one vector with duration less or equal to one second *)
   List[OneHotEncoding[ToTimeShiftIndex[duration]]],
 
-(*Otherwise create a list of one hot vectors*)
+(* Otherwise create a list of one hot vectors*)
   If[FractionalPart[duration] > 0,
     Join[
       MaxTimeShiftEncodings[IntegerPart[duration]], EncodeTimeShift[FractionalPart[duration]]
@@ -83,15 +81,15 @@ ToTimeShiftIndex[duration_] := Block[{index},
   If[index == NoteOffEventsEnd, index = NoteOffEventsEnd + 1, index]
 ];
 
-DecodeTimeShift[position_] := N[((position - NoteOffEventsEnd) * TimeShiftStepDuration) / TimeMeasure]; (* return seconds*)
+DecodeTimeShift[position_] := N[((position - NoteOffEventsEnd) * TimeShiftStepDuration) / TimeMeasure]; (* return seconds *)
 
-StatusByte[note_] := note[[2, 1]];(*status byte position*)
+StatusByte[note_] := note[[2, 1]];(* status byte position *)
 
-VelocityByte[note_] := note[[3, 2]];(*velocity byte position*)
+VelocityByte[note_] := note[[3, 2]];(* velocity byte position *)
 
-NoteByte[note_] := note[[3, 1]];(*midi note byte position*)
+NoteByte[note_] := note[[3, 1]];(* midi note byte position *)
 
-TimeShiftByte[note_, secondsPerTick_] := note[[1]] * secondsPerTick;(*time shift byte position*)
+TimeShiftByte[note_, secondsPerTick_] := note[[1]] * secondsPerTick;(* time shift byte position *)
 
 NoteEvents[raw_, secondsPerTick_] := Select[#,
   StatusByte[#] == NoteOnByte
@@ -110,6 +108,18 @@ NoteToRange = AssociationMap[Reverse, RangeToNote];
 IdToNote[id_] := With[{d = id - 60}, RangeToNote@Mod[d, 12] <> ToString[Floor[d / 12] + 4]];
 
 
+(* ::Input::Initialization:: *)
+GetTimePositions[track_,seconds_, secondsPerTick_]:=Block[{positions ={},time =0},
+Do[
+time = time + track[[i]][[1]] * secondsPerTick;
+If[time > seconds, positions= Append[positions,i]; time =0;],
+
+{i, Length@track}];
+
+positions
+]
+
+
 (* ::CodeText:: *)
 (*Encode midi sequence:*)
 
@@ -120,7 +130,7 @@ EncodeMidi[track_, secondsPerTick_] := Block[{lastVelocity = 0},
     Map[
       Block[{list = {}},
       (* Add time shifts when needed *)
-        If[TimeShiftByte[#] > 0, list = Join[list, EncodeTimeShift[TimeShiftByte[#, secondsPerTick]]]];
+        If[TimeShiftByte[#, secondsPerTick] > 0, list = Join[list, EncodeTimeShift[TimeShiftByte[#, secondsPerTick]]]];
 
         (* Proceed with logic only if it's a note event *)
         If[StatusByte[#] == NoteOnByte || StatusByte[#] == NoteOffByte,
@@ -144,17 +154,28 @@ EncodeMidi[track_, secondsPerTick_] := Block[{lastVelocity = 0},
 
 
 EncodeTrack[path_] := Block[{encodings},
-  {raw, header} = Import[path, #]& /@ {"RawData", "Header"};
-  tempos = Cases[Flatten[raw], HoldPattern["SetTempo" -> tempo_] :> tempo];
-  microsecondsPerBeat = If[Length@tempos > 0, First[tempos], 500000];
+	{raw, header} = Import[path, #]& /@ {"RawData", "Header"};
 
-  ticksPerBeat = First@Cases[header, HoldPattern["TimeDivision" -> x_] :> x];
-  secondsPerTick = (microsecondsPerBeat / ticksPerBeat) * 10^-6.;
+	tempos = Cases[Flatten[raw], HoldPattern["SetTempo" -> tempo_] :> tempo];
 
-  encodings = Partition[EncodeMidi[GetMidiEvents[raw, secondsPerTick], secondsPerTick], 500];
-  Print[StringJoin["Encoded: ", path]];
-
-  encodings
+	microsecondsPerBeat = If[Length@tempos > 0, First[tempos], 500000]; (* If there is no explicit tempo we use default 120 bpm *)
+	
+	timeDivision = First@Cases[header, HoldPattern["TimeDivision" -> division_] :> division];
+	timeDivisionBits = IntegerDigits[timeDivision, 2];
+	timeDivisionBits = If[Length@timeDivisionBits < 16, PadLeft[timeDivisionBits, 16], timeDivisionBits];
+	timeDivisionType = timeDivisionBits[[1]];
+	framesPerSecond = timeDivisionBits[[2;; 8]];
+	ticksPerFrame = timeDivisionBits[[9;; 16]];
+	
+	ticksPerBeat = If[timeDivisionType == 0, timeDivision, 10^6 /(framesPerSecond * ticksPerFrame)];
+	
+	secondsPerTick = (microsecondsPerBeat / ticksPerBeat) * 10^-6.;
+	 
+	encodings = Partition[EncodeMidi[GetMidiEvents[raw, secondsPerTick], secondsPerTick], 500];
+	
+	Print[StringJoin["Encoded: ", path]];
+	
+	encodings
 ];
 
 
@@ -162,9 +183,9 @@ EncodeTrack[path_] := Block[{encodings},
 (*Decode one-hot sequence:*)
 
 
-ToEvents[encodings_] := Map[
+ToEvents[encodings_, indices_] := Map[
   Block[{pos, type, value},
-    pos = First@Flatten[Position[#, 1]];
+    pos = If[indices, #, First@Flatten[Position[#, 1]]];
 
     type = Which[
       pos <= NoteEventsLength, NoteOnEvent,
@@ -185,8 +206,8 @@ ToEvents[encodings_] := Map[
   encodings];
 
 
-ToSound[encodings_, indices_] := Sound[SortBy[Flatten[Block[{notes, events},
-  events = ToEvents[If[indices, OneHotEncoding /@ encodings, encodings]];
+ToSound[encodings_] := Sound[SortBy[Flatten[Block[{notes, events},
+  events = ToEvents[encodings, True];
 
   notes = Intersection[Cases[events, HoldPattern["NoteOn" -> note_] :> note], Cases[events, HoldPattern["NoteOff" -> note_] :> note]];
 
