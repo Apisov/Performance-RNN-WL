@@ -1,7 +1,7 @@
 # Performance RNN
 ### Generating Dynamic Polyphonies without Timing Restrictions.
 
-This work is an attempt to reimplement Magenta's [work](https://magenta.tensorflow.org/performance-rnn) using Wolfram Language.
+This work is an attempt to reimplement Magenta's [work](https://magenta.tensorflow.org/performance-rnn) using [Wolfram Language](https://www.wolfram.com/language).
 
 Original source code can be found [here](https://github.com/tensorflow/magenta/tree/master/magenta/models/performance_rnn).
 
